@@ -34,6 +34,7 @@ namespace LogisticsApp.Helpers
             services.AddTransient<ICourierService, CourierService>();
             services.AddTransient<IValidationService, ValidationService>();
             services.AddTransient<ICalculationService, CalculationService>();
+            services.AddTransient<IPackageService, PackageService>();
         }
     }
 }

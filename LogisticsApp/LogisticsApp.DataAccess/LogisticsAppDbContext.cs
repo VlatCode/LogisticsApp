@@ -65,7 +65,16 @@ namespace LogisticsApp.DataAccess
 
             // PACKAGES TABLE
             modelBuilder.Entity<Package>()
-                .Property(x => x.Id);
+                .Property(x => x.Weight)
+                .IsRequired();
+            modelBuilder.Entity<Package>()
+                .Property(x => x.Dimensions)
+                .IsRequired();
+            // Relations
+            modelBuilder.Entity<Package>()
+                .HasOne(x => x.Calculation)
+                .WithMany(x => x.Packages)
+                .HasForeignKey(x => x.CalculationId);
         }
     }
 }

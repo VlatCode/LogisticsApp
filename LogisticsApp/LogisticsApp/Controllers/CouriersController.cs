@@ -16,13 +16,11 @@ namespace LogisticsApp.Controllers
     {
         private ICourierService _courierService;
         private IValidationService _validationService;
-        private ICalculationService _calculationService;
 
-        public CouriersController(ICourierService courierService, IValidationService validationService, ICalculationService calculationService)
+        public CouriersController(ICourierService courierService, IValidationService validationService)
         {
             _courierService = courierService;
             _validationService = validationService;
-            _calculationService = calculationService;
         }
 
         [HttpGet]
@@ -99,27 +97,7 @@ namespace LogisticsApp.Controllers
             try
             {
                 var validation = _validationService.GetValidationsByCourierId(courierId);
-                //var calculation = _calculationService.GetCalculationsByCourierId(courierId);
                 return Ok(validation);
-            }
-            catch (NotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (Exception e)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred! Contact the admin!");
-            }
-        }
-
-        // CALCULATIONS BY COURIER ID - ALSO IN CalculationsController
-        [HttpGet("calculationsByCourier/{courierId}")]
-        public ActionResult<CalculationDto> GetCalculationsByCourierId(int courierId)
-        {
-            try
-            {
-                var calculation = _calculationService.GetCalculationsByCourierId(courierId);
-                return Ok(calculation);
             }
             catch (NotFoundException e)
             {

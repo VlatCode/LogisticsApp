@@ -1,5 +1,4 @@
-﻿using LogisticsApp.Domain.Models;
-using LogisticsApp.DTOs;
+﻿using LogisticsApp.DTOs;
 using LogisticsApp.Services.Implementations;
 using LogisticsApp.Services.Interfaces;
 using LogisticsApp.Shared;
@@ -10,21 +9,21 @@ namespace LogisticsApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValidationsController : ControllerBase
+    public class PackagesController : ControllerBase
     {
-        private IValidationService _validationService;
+        private IPackageService _packageService;
 
-        public ValidationsController(IValidationService validationService)
+        public PackagesController(IPackageService packageService)
         {
-            _validationService = validationService;
+            _packageService = packageService;
         }
 
         [HttpGet]
-        public ActionResult<List<ValidationDto>> Get()
+        public ActionResult<List<PackageDto>> Get()
         {
             try
             {
-                return Ok(_validationService.GetAllValidations());
+                return Ok(_packageService.GetAllPackages());
             }
             catch (Exception e)
             {
@@ -33,12 +32,12 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ValidationDto> GetById(int id)
+        public ActionResult<PackageDto> GetById(int id)
         {
             try
             {
-                var validationDto = _validationService.GetById(id);
-                return Ok(validationDto);
+                var packageDto = _packageService.GetById(id);
+                return Ok(packageDto);
             }
             catch (NotFoundException e)
             {
@@ -50,13 +49,13 @@ namespace LogisticsApp.Controllers
             }
         }
 
-        [HttpPost("addValidation")]
-        public IActionResult AddValidation([FromBody] AddValidationDto addValidationDto)
+        [HttpPost("addPackage")]
+        public IActionResult AddPackage([FromBody] AddPackageDto addPackageDto)
         {
             try
             {
-                _validationService.AddValidation(addValidationDto);
-                return StatusCode(StatusCodes.Status201Created, "Validation added to the system.");
+                _packageService.AddPackage(addPackageDto);
+                return StatusCode(StatusCodes.Status201Created, "Package was added to the system.");
             }
             catch (InvalidEntryException e)
             {
@@ -68,13 +67,13 @@ namespace LogisticsApp.Controllers
             }
         }
 
-        [HttpDelete("deleteValidation/{id}")]
-        public ActionResult<ValidationDto> Delete(int id)
+        [HttpDelete("deletePackage/{id}")]
+        public ActionResult<PackageDto> Delete(int id)
         {
             try
             {
-                _validationService.DeleteValidation(id);
-                return Ok($"Validation with id {id} successfully deleted.");
+                _packageService.DeletePackage(id);
+                return Ok($"Package with id {id} successfully deleted.");
             }
             catch (NotFoundException e)
             {

@@ -8,6 +8,7 @@ using LogisticsApp.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,7 +28,7 @@ namespace LogisticsApp.Services.Implementations
             // 1. Validation
             if (addCalculationDto.CourierId == null || addCalculationDto.CalculationType == null || addCalculationDto.From == null || addCalculationDto.To == null || addCalculationDto.Cost == null)
             {
-                throw new InvalidEntryException("All fields are required! Try again.");
+                throw new InvalidEntryException("All fields are required!");
             }
             // 2. Map to domain model
             Calculation newCalculation = addCalculationDto.ToCalculation();
@@ -40,7 +41,7 @@ namespace LogisticsApp.Services.Implementations
             Calculation calculationDb = _calculationRepository.GetById(id);
             if (calculationDb == null)
             {
-                throw new NotFoundException($"Calculation with id {id} was not found.");
+                throw new NotFoundException($"Calculation with ID {id} was not found.");
             }
 
             _calculationRepository.Delete(calculationDb);
@@ -57,11 +58,11 @@ namespace LogisticsApp.Services.Implementations
             Calculation calculationDb = _calculationRepository.GetById(id);
             if (calculationDb == null)
             {
-                throw new NotFoundException($"Calculation with id {id} was not found.");
+                throw new NotFoundException($"Calculation with ID {id} was not found.");
             }
             if (id == null)
             {
-                throw new InvalidEntryException("Calculation id is required");
+                throw new InvalidEntryException("Calculation ID is required");
             }
 
             CalculationDto calculationDto = calculationDb.ToCalculationDto();
@@ -84,16 +85,51 @@ namespace LogisticsApp.Services.Implementations
                 .ToList();
         }
 
-        public List<CalculationDto> GetCalculationsByInputs(int calculationType, int value)
+        public CalculationDto GetCostByInputs(int weight, int height, int width, int depth)
         {
             var calculationsDb = _calculationRepository.GetAll();
 
-            return calculationsDb
-                .Where(x => x.CalculationType == calculationType)
-                .Where(x => x.From <= value)
-                .Where(x => x.To >= value)
+            var dimensions = height * width * depth;
+
+            var costsByWeight = calculationsDb
+                .Where(x => x.From <= weight)
+                .Where(x => x.To >= weight)
                 .Select(x => x.ToCalculationDto())
-                .ToList();
+                .OrderByDescending(x => x.Cost)
+                .ToList()
+                .First(x => x.CalculationType == 0);
+
+            var costsByDimensions = calculationsDb
+                .Where(x => x.From <= dimensions)
+                .Where(x => x.To >= dimensions)
+                .Select(x => x.ToCalculationDto())
+                .OrderByDescending(x => x.Cost)
+                .ToList()
+                .First(x => x.CalculationType == 1);
+
+            if (costsByWeight.Cost > costsByDimensions.Cost)
+            {
+                return costsByWeight;
+            }
+            else
+            {
+                return costsByDimensions;
+            }
         }
+
+        //// Initial logic - overriden by method above
+        //public CalculationDto GetCalculationsByInputs(int calculationType, int value)
+        //{
+        //    var calculationsDb = _calculationRepository.GetAll();
+
+        //    return calculationsDb
+        //        .Where(x => x.CalculationType == calculationType)
+        //        .Where(x => x.From <= value)
+        //        .Where(x => x.To >= value)
+        //        .Select(x => x.ToCalculationDto())
+        //        .OrderByDescending(x => x.Cost)
+        //        .ToList()
+        //        .First();
+        //}
     }
 }

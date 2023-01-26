@@ -16,9 +16,9 @@ namespace LogisticsApp.Services.Interfaces
         void DeleteCalculation(int id);
         List<CalculationDto> GetCalculationsByCourierId(int courierId);
         List<CalculationDto> GetCalculationsByType(int calculationType);
-        List<CalculationDto> GetCalculationsByInputs(int calculationType, int value);
+        CalculationDto GetCostByInputs(int weight, int height, int width, int depth);
 
-        //// IF NEEDED - UNCOMMENT ALSO IN 'CalculationService' and add a Http request in 'CalculationController'
-        //public double GetCalculationsByInputs(int validationType, int value);
+        //// Initial logic - overriden by method above
+        //CalculationDto GetCalculationsByInputs(int calculationType, int value);
     }
 }

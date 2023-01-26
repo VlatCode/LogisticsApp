@@ -20,5 +20,6 @@ namespace LogisticsApp.Domain.Models
         public int To { get; set; }
         public double Cost { get; set; }
         public Courier Courier { get; set; }
+        public List<Package> Packages = new List<Package>();
     }
 }

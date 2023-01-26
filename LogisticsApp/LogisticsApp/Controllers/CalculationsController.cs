@@ -1,9 +1,11 @@
-﻿using LogisticsApp.DTOs;
+﻿using LogisticsApp.Domain.Models;
+using LogisticsApp.DTOs;
 using LogisticsApp.Services.Implementations;
 using LogisticsApp.Services.Interfaces;
 using LogisticsApp.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 
 namespace LogisticsApp.Controllers
 {
@@ -12,10 +14,13 @@ namespace LogisticsApp.Controllers
     public class CalculationsController : ControllerBase
     {
         private ICalculationService _calculationService;
+        private IPackageService _packageService;
+        
 
-        public CalculationsController(ICalculationService calculationService)
+        public CalculationsController(ICalculationService calculationService, IPackageService packageService)
         {
             _calculationService = calculationService;
+            _packageService= packageService;
         }
 
         [HttpGet]
@@ -67,7 +72,7 @@ namespace LogisticsApp.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("deleteCalculation/{id}")]
         public ActionResult<CalculationDto> Delete(int id)
         {
             try
@@ -85,7 +90,7 @@ namespace LogisticsApp.Controllers
             }
         }
 
-        // CALCULATIONS BY COURIER ID - ALSO IN CouriersController
+        // CALCULATIONS BY COURIER ID
         [HttpGet("calculationsByCourier/{courierId}")]
         public ActionResult<CalculationDto> GetByCourierId(int courierId)
         {
@@ -104,7 +109,7 @@ namespace LogisticsApp.Controllers
             }
         }
 
-        // CALCULATIONS BY TYPE
+        // CALCULATIONS BY TYPE (weight/dimensions)
         [HttpGet("calculationsByType/{calculationType}")]
         public ActionResult<CalculationDto> GetCalculationsByType(int calculationType)
         {
@@ -123,13 +128,23 @@ namespace LogisticsApp.Controllers
             }
         }
 
-        // CALCULATIONS BY INPUTS
-        [HttpGet("calculationsByInputs/{calculationType}/{value}")]
-        public ActionResult<CalculationDto> GetCalculationsByInputs(int calculationType, int value)
+        // COST BY INPUTS
+        [HttpGet("costByInputs/{weight}/{height}/{width}/{depth}")]
+        public ActionResult<CalculationDto> GetCostByInputs(int weight, int height, int width, int depth)
         {
             try
             {
-                var calculation = _calculationService.GetCalculationsByInputs(calculationType, value);
+                var calculation = _calculationService.GetCostByInputs(weight, height, width, depth);
+                
+                // This code creates a new package based on the user inputs
+                var packages = _packageService.GetAllPackages();
+                AddPackageDto addPackageDto = new AddPackageDto();
+                addPackageDto.Weight = weight;
+                addPackageDto.Dimensions = height * width * depth;
+                addPackageDto.CalculationId = calculation.Id;
+                _packageService.AddPackage(addPackageDto);
+
+                // Returns final price
                 return Ok(calculation);
             }
             catch (NotFoundException e)
@@ -141,5 +156,25 @@ namespace LogisticsApp.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred! Contact the admin!");
             }
         }
+
+        //// Initial logic - overriden by method above
+        //// CALCULATIONS BY INPUTS
+        //[HttpGet("calculationsByInputs/{calculationType}/{value}")]
+        //public ActionResult<CalculationDto> GetCalculationsByInputs(int calculationType, int value)
+        //{
+        //    try
+        //    {
+        //        var calculation = _calculationService.GetCalculationsByInputs(calculationType, value);
+        //        return Ok(calculation);
+        //    }
+        //    catch (NotFoundException e)
+        //    {
+        //        return NotFound(e.Message);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred! Contact the admin!");
+        //    }
+        //}
     }
 }

@@ -41,7 +41,7 @@ namespace LogisticsApp.Services.Implementations
             Validation validationDb = _validationRepository.GetById(id);
             if (validationDb == null)
             {
-                throw new NotFoundException($"Validation with id {id} was not found.");
+                throw new NotFoundException($"Validation with ID {id} was not found.");
             }
 
             _validationRepository.Delete(validationDb);
@@ -58,11 +58,11 @@ namespace LogisticsApp.Services.Implementations
             Validation validationDb = _validationRepository.GetById(id);
             if (validationDb == null)
             {
-                throw new NotFoundException($"Validation with id {id} was not found.");
+                throw new NotFoundException($"Validation with ID {id} was not found.");
             }
             if (id == null)
             {
-                throw new InvalidEntryException("Validation id is required");
+                throw new InvalidEntryException("Validation ID is required");
             }
 
             ValidationDto validationDto = validationDb.ToValidationDto();

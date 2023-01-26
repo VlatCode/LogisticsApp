@@ -44,7 +44,7 @@ namespace LogisticsApp.Services.Implementations
             Courier courierDb = _courierRepository.GetById(id);
             if (courierDb == null)
             {
-                throw new NotFoundException($"Courier with id {id} was not found.");
+                throw new NotFoundException($"Courier with ID {id} was not found.");
             }
 
             _courierRepository.Delete(courierDb);
@@ -61,11 +61,11 @@ namespace LogisticsApp.Services.Implementations
             Courier courierDb = _courierRepository.GetById(id);
             if (courierDb == null)
             {
-                throw new NotFoundException($"Courier with id {id} was not found.");
+                throw new NotFoundException($"Courier with ID {id} was not found.");
             }
             if (id == null)
             {
-                throw new InvalidEntryException("Courier id is required");
+                throw new InvalidEntryException("Courier ID is required");
             }
 
             CourierDto courierDto = courierDb.ToCourierDto();
