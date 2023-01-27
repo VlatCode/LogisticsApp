@@ -2,7 +2,7 @@
 
 ## Description
 
-This repository is the backend of a cargo company website with features regarding couriers and pricing information.
+This repository is the back-end code of a cargo company website with features regarding couriers and pricing information.
 It includes:
 * Displaying all couriers available, showing each courier's cargo capacity, adding newly partnered couriers, removing couriers from the list
 * Displaying each courier's shipping offers
