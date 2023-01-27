@@ -72,19 +72,17 @@ namespace LogisticsApp.Services.Implementations
         public List<ValidationDto> GetValidationsByCourierId(int courierId)
         {
             var validationsDb = _validationRepository.GetAll();
+
+            if (validationsDb == null)
+            {
+                throw new NotFoundException($"Courier with ID {courierId} was not found.");
+            }
+            if (courierId == null)
+            {
+                throw new InvalidEntryException("Courier ID is required");
+            }
+
             return validationsDb.Where(x => x.CourierId == courierId)
-                .Select(x => x.ToValidationDto())
-                .ToList();
-        }
-
-        public List<ValidationDto> GetValidationsByInputs(int validationType, int value)
-        {
-            var validationsDb = _validationRepository.GetAll();
-
-            return validationsDb
-                .Where(x => x.ValidationType == validationType)
-                .Where(x => x.From <= value)
-                .Where(x => x.To >= value)
                 .Select(x => x.ToValidationDto())
                 .ToList();
         }

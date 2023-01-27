@@ -147,9 +147,9 @@ namespace LogisticsApp.Controllers
                 // Returns final price
                 return Ok(calculation);
             }
-            catch (NotFoundException e)
+            catch (InvalidEntryException e)
             {
-                return NotFound(e.Message);
+                return BadRequest(e.Message);
             }
             catch (Exception e)
             {

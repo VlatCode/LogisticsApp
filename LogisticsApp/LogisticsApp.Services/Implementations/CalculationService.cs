@@ -72,6 +72,16 @@ namespace LogisticsApp.Services.Implementations
         public List<CalculationDto> GetCalculationsByCourierId(int courierId)
         {
             var calculationsDb = _calculationRepository.GetAll();
+
+            if (calculationsDb == null)
+            {
+                throw new NotFoundException($"Courier with ID {courierId} was not found.");
+            }
+            if (courierId == null)
+            {
+                throw new InvalidEntryException("Calculation ID is required");
+            }
+
             return calculationsDb.Where(x => x.CourierId == courierId)
                 .Select(x => x.ToCalculationDto())
                 .ToList();
@@ -80,6 +90,16 @@ namespace LogisticsApp.Services.Implementations
         public List<CalculationDto> GetCalculationsByType(int calculationType)
         {
             var calculationsDb = _calculationRepository.GetAll();
+
+            if (calculationsDb == null)
+            {
+                throw new NotFoundException($"Calculation type does not exist! Try again.");
+            }
+            if (calculationType == null)
+            {
+                throw new InvalidEntryException("Calculation type is required!");
+            }
+
             return calculationsDb.Where(x => x.CalculationType == calculationType).
                 Select(x => x.ToCalculationDto())
                 .ToList();
@@ -89,6 +109,10 @@ namespace LogisticsApp.Services.Implementations
         {
             var calculationsDb = _calculationRepository.GetAll();
 
+            if (weight == null || height == null || width == null || depth == null)
+            {
+                throw new InvalidEntryException("All fields are required!");
+            }
             var dimensions = height * width * depth;
 
             var costsByWeight = calculationsDb

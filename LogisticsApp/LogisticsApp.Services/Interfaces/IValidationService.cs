@@ -15,6 +15,5 @@ namespace LogisticsApp.Services.Interfaces
         void AddValidation(AddValidationDto validation);
         void DeleteValidation(int id);
         List<ValidationDto> GetValidationsByCourierId(int courierId);
-        List<ValidationDto> GetValidationsByInputs(int validationType, int value);
     }
 }
