@@ -17,8 +17,5 @@ namespace LogisticsApp.Services.Interfaces
         List<CalculationDto> GetCalculationsByCourierId(int courierId);
         List<CalculationDto> GetCalculationsByType(int calculationType);
         CalculationDto GetCostByInputs(int weight, int height, int width, int depth);
-
-        //// Initial logic - overriden by method above
-        //CalculationDto GetCalculationsByInputs(int calculationType, int value);
     }
 }

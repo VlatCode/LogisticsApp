@@ -135,7 +135,7 @@ namespace LogisticsApp.Controllers
             try
             {
                 var calculation = _calculationService.GetCostByInputs(weight, height, width, depth);
-                
+
                 // This code creates a new package based on the user inputs
                 var packages = _packageService.GetAllPackages();
                 AddPackageDto addPackageDto = new AddPackageDto();
@@ -156,25 +156,5 @@ namespace LogisticsApp.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred! Contact the admin!");
             }
         }
-
-        //// Initial logic - overriden by method above
-        //// CALCULATIONS BY INPUTS
-        //[HttpGet("calculationsByInputs/{calculationType}/{value}")]
-        //public ActionResult<CalculationDto> GetCalculationsByInputs(int calculationType, int value)
-        //{
-        //    try
-        //    {
-        //        var calculation = _calculationService.GetCalculationsByInputs(calculationType, value);
-        //        return Ok(calculation);
-        //    }
-        //    catch (NotFoundException e)
-        //    {
-        //        return NotFound(e.Message);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred! Contact the admin!");
-        //    }
-        //}
     }
 }

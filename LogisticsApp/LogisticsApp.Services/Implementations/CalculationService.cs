@@ -8,6 +8,7 @@ using LogisticsApp.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -113,47 +114,54 @@ namespace LogisticsApp.Services.Implementations
             {
                 throw new InvalidEntryException("All fields are required!");
             }
-            var dimensions = height * width * depth;
+            int dimensions = height * width * depth;
 
             var costsByWeight = calculationsDb
                 .Where(x => x.From <= weight)
                 .Where(x => x.To >= weight)
+                .Where(x => x.CalculationType == 0)
                 .Select(x => x.ToCalculationDto())
-                .OrderByDescending(x => x.Cost)
-                .ToList()
-                .First(x => x.CalculationType == 0);
+                .ToList();
 
             var costsByDimensions = calculationsDb
                 .Where(x => x.From <= dimensions)
                 .Where(x => x.To >= dimensions)
+                .Where(x => x.CalculationType == 1)
                 .Select(x => x.ToCalculationDto())
-                .OrderByDescending(x => x.Cost)
-                .ToList()
-                .First(x => x.CalculationType == 1);
+                .ToList();
 
-            if (costsByWeight.Cost > costsByDimensions.Cost)
+            var calculations = new List<CalculationDto>();
+            calculations.AddRange(costsByWeight);
+            calculations.AddRange(costsByDimensions);
+
+            var grouped = calculations.GroupBy(x => x.CourierId)
+                .Where(x => x.Count() > 1)
+                .OrderBy(x => x.Key);
+
+            var calculationForEachCourier = new List<CalculationDto>();
+
+            foreach (var item in grouped)
             {
-                return costsByWeight;
+                var tempList = item.ToList();
+
+                foreach (var calc in tempList)
+                {
+                    if (calc.CourierId == 2 && calc.CalculationType == 0 && weight > 25)
+                    {
+                        calc.Cost = (weight - 25) * 0.417 + calc.Cost;
+                    }
+                    if (calc.CourierId == 3 && calc.CalculationType == 0 && weight > 30)
+                    {
+                        calc.Cost = (weight - 30) * 0.41 + calc.Cost;
+                    }
+                }
+
+                calculationForEachCourier.Add(tempList.OrderByDescending(x => x.Cost).FirstOrDefault());
             }
-            else
-            {
-                return costsByDimensions;
-            }
+
+            var finalCalculation = calculationForEachCourier.OrderBy(x => x.Cost).FirstOrDefault();
+
+            return finalCalculation;
         }
-
-        //// Initial logic - overriden by method above
-        //public CalculationDto GetCalculationsByInputs(int calculationType, int value)
-        //{
-        //    var calculationsDb = _calculationRepository.GetAll();
-
-        //    return calculationsDb
-        //        .Where(x => x.CalculationType == calculationType)
-        //        .Where(x => x.From <= value)
-        //        .Where(x => x.To >= value)
-        //        .Select(x => x.ToCalculationDto())
-        //        .OrderByDescending(x => x.Cost)
-        //        .ToList()
-        //        .First();
-        //}
     }
 }
